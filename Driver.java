@@ -64,7 +64,7 @@ public class Driver {
         Matchbox matchbox = matchboxes.get(key);
         System.out.println("GameState (Serialized): " + key);
         System.out.println("BeadBox: " + matchbox.getBeadBoxContents());
-        System.out.println("---------------------------------------------------");
+        System.out.println();
     }
 }
 

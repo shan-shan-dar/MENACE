@@ -22,7 +22,7 @@ public class Game {
 
         while (curGameState.checkWon() == -2){
 
-            int move = -1;
+            int move = -10;
 
             if (!turn) {
         
