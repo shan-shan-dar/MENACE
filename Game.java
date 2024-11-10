@@ -9,30 +9,18 @@ public class Game {
     public HashMap<String, Matchbox> matchboxes;
 
     public Game(HashMap<String, Matchbox> matchboxes){
-       curGameState = new Matchbox(new int[][]{
-            {0, 0, 0},
-            {0, 0, 0},
-            {0, 0, 0}
-        });
-        turn = false;
+        // empty board
+        curGameState = matchboxes.get(Driver.serializeState(new int[3][3]));
+        // true if MENACE starts first, false otherwise
+        turn = true;
         stateHistory = new ArrayList<>();
         this.matchboxes = matchboxes;
-    }
-
-    private String serializeState(int[][] gameState) {
-        StringBuilder sb = new StringBuilder();
-        for (int[] row : gameState) {
-            for (int cell : row) {
-                sb.append(cell).append("-");
-            }
-        }
-        return sb.toString();
     }
 
     public int run(){
         Scanner sc = new Scanner(System.in);
 
-        while (curGameState.checkWon() == 0){
+        while (curGameState.checkWon() == -2){
 
             int move = -1;
 
@@ -45,7 +33,16 @@ public class Game {
                     System.out.print("Move: ");
                     move = sc.nextInt();
                     System.out.println();
-                } while (!curGameState.isValidMove(move));
+                } while (!(curGameState.isValidMove(move) || move == -10 || move == -20));
+
+                if (move == -10){
+                    return -10;
+                }
+
+                if (move == -20){
+                    return -20;
+                }
+
             } else {
                 // determine MENACE move
                 move = curGameState.drawRandomBead();
@@ -59,7 +56,7 @@ public class Game {
         }
 
         System.out.println(curGameState);
-        System.out.println(((curGameState.checkWon() == -1) ? "You win!" : "MENACE wins!") + "\n");
+        System.out.println(curGameState.checkWon() == 0 ? "Draw" : (((curGameState.checkWon() == -1) ? "You win!" : "MENACE wins!")) + "\n");
 
         return curGameState.checkWon();
     }
@@ -74,7 +71,7 @@ public class Game {
         int col = bead % 3;
         newState[row][col] = player;
 
-        String stateKey = serializeState(newState);
+        String stateKey = Driver.serializeState(newState);
     
         // Check if this game state already exists in matchboxes
         if (matchboxes.containsKey(stateKey)) {

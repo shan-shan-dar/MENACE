@@ -80,11 +80,15 @@ public class Matchbox {
         this.isMENACEMove = isMENACEMove;
     }
 
+    public ArrayList<Integer> getBeadBoxContents() {
+        return beadBox;
+    }
+
     /*
      * 1    MENACE wins
      * -1   the player wins
-     * 0    the game is still ongoing
-     * -2   it’s a draw
+     * -2    the game is still ongoing
+     * 0   it’s a draw
      */
     public int checkWon(){
         // check rows
@@ -113,13 +117,13 @@ public class Matchbox {
         for (int[] row : gameState) {
             for (int cell : row) {
                 if (cell == 0){
-                    return 0;
+                    return -2;
                 }
             }
         }
 
         // draw
-        return -2;
+        return 0;
     }
 
     @Override
