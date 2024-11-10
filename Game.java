@@ -1,20 +1,21 @@
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Scanner;
 
 public class Game {
     public Matchbox curGameState;
-    public boolean turn;
+    public boolean playerOneTurn;
     public ArrayList<Matchbox> stateHistory;
-    public HashMap<String, Matchbox> matchboxes;
+    public final MENACE player1;
+    public final Player player2;
 
-    public Game(HashMap<String, Matchbox> matchboxes){
+    public Game(MENACE player1, Player player2){
+        this.player1 = player1;
+        this.player2 = player2;
         // empty board
-        curGameState = matchboxes.get(Driver.serializeState(new int[3][3]));
+        curGameState = player1.getMatchboxes().get(MENACE.serializeState(new int[3][3]));
         // true if MENACE starts first, false otherwise
-        turn = true;
+        playerOneTurn = true;
         stateHistory = new ArrayList<>();
-        this.matchboxes = matchboxes;
     }
 
     public int run(){
@@ -24,39 +25,33 @@ public class Game {
 
             int move = -10;
 
-            if (!turn) {
-        
-                System.out.println(curGameState);
+            if (!playerOneTurn) {
+                move = player2.makeMove(this);
 
-                // take user move
-                do { 
-                    System.out.print("Move: ");
-                    move = sc.nextInt();
-                    System.out.println();
-                } while (!(curGameState.isValidMove(move) || move == -10 || move == -20));
-
+                // code for exit
                 if (move == -10){
                     return -10;
                 }
 
+                // code to show matchbox content
                 if (move == -20){
                     return -20;
                 }
 
             } else {
                 // determine MENACE move
-                move = curGameState.drawRandomBead();
+                move = player1.makeMove(this);
             }
 
             Matchbox oldGameState = curGameState;
-            curGameState = makeMove((turn ? 1 : -1), move);
+            curGameState = makeMove((playerOneTurn ? player1.getSign() : -player1.getSign()), move);
             stateHistory.add(oldGameState);
 
-            turn = !turn;
+            playerOneTurn = !playerOneTurn;
         }
 
         System.out.println(curGameState);
-        System.out.println(curGameState.checkWon() == 0 ? "Draw" : (((curGameState.checkWon() == -1) ? "You win!" : "MENACE wins!")) + "\n");
+        System.out.println((curGameState.checkWon() == 0 ? "Draw" : (((curGameState.checkWon() == -1) ? "Player 2 wins!" : "Player 1 wins!"))) + "\n");
 
         return curGameState.checkWon();
     }
@@ -71,22 +66,22 @@ public class Game {
         int col = bead % 3;
         newState[row][col] = player;
 
-        String stateKey = Driver.serializeState(newState);
+        String stateKey = MENACE.serializeState(newState);
     
         // Check if this game state already exists in matchboxes
-        if (matchboxes.containsKey(stateKey)) {
+        if (player1.getMatchboxes().containsKey(stateKey)) {
             curGameState.setMoveTracker(bead);
-            curGameState.setMENACEMove(player == 1);
-            return matchboxes.get(stateKey);
+            curGameState.setIsPlayerOneMove(player == 1);
+            return player1.getMatchboxes().get(stateKey);
         }
     
         // If the state doesn’t exist, create a new Matchbox and add it to matchboxes
         Matchbox newMatchbox = new Matchbox(newState);
-        matchboxes.put(stateKey, newMatchbox);
+        player1.getMatchboxes().put(stateKey, newMatchbox);
     
         // Update the move tracker and MENACE move indicator
         curGameState.setMoveTracker(bead);
-        curGameState.setMENACEMove(player == 1);
+        curGameState.setIsPlayerOneMove(player == 1);
     
         return newMatchbox;
     }

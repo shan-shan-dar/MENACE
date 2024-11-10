@@ -9,7 +9,7 @@ public class Matchbox {
 
     // tracks the latest move made to this state
     private int moveTracker;
-    private boolean isMENACEMove;
+    private boolean isPlayerOneMove;
 
     public Matchbox(int[][] gameState){
         random = new Random();
@@ -68,16 +68,16 @@ public class Matchbox {
         return moveTracker;
     }
 
-    public boolean isMENACEMove() {
-        return isMENACEMove;
+    public boolean isPlayerOneMove() {
+        return isPlayerOneMove;
     }
 
     public void setMoveTracker(int move){
         moveTracker = move;
     }
 
-    public void setMENACEMove(boolean isMENACEMove) {
-        this.isMENACEMove = isMENACEMove;
+    public void setIsPlayerOneMove(boolean isPlayerOneMove) {
+        this.isPlayerOneMove = isPlayerOneMove;
     }
 
     public ArrayList<Integer> getBeadBoxContents() {
@@ -135,8 +135,8 @@ public class Matchbox {
             for (int j = 0; j < gameState[i].length; j++) {
                 // Convert the values based on conditions
                 switch (gameState[i][j]) {
-                    case -1 -> result += "🅇";
-                    case 1 -> result += "🄾";
+                    case -1 -> result += "🄾";
+                    case 1 -> result += "🅇";
                     default -> result += positions.charAt(position); // Represent 0 as its position number
                 }
                 
