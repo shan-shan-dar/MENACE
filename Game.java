@@ -1,13 +1,14 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class Game {
     public Matchbox curGameState;
     public boolean turn;
     public ArrayList<Matchbox> stateHistory;
-    public ArrayList<Matchbox> matchboxes;
+    public HashMap<String, Matchbox> matchboxes;
 
-    public Game(ArrayList<Matchbox> matchboxes){
+    public Game(HashMap<String, Matchbox> matchboxes){
        curGameState = new Matchbox(new int[][]{
             {0, 0, 0},
             {0, 0, 0},
@@ -16,6 +17,16 @@ public class Game {
         turn = false;
         stateHistory = new ArrayList<>();
         this.matchboxes = matchboxes;
+    }
+
+    private String serializeState(int[][] gameState) {
+        StringBuilder sb = new StringBuilder();
+        for (int[] row : gameState) {
+            for (int cell : row) {
+                sb.append(cell).append("-");
+            }
+        }
+        return sb.toString();
     }
 
     public int run(){
@@ -62,19 +73,19 @@ public class Game {
         int row = bead / 3;
         int col = bead % 3;
         newState[row][col] = player;
+
+        String stateKey = serializeState(newState);
     
         // Check if this game state already exists in matchboxes
-        for (Matchbox matchbox : matchboxes) {
-            if (matchbox.compareTo(newState) == 0) {
-                curGameState.setMoveTracker(bead);
-                curGameState.setMENACEMove(player == 1);
-                return matchbox;  // Return the existing matchbox with the learned bead counts
-            }
+        if (matchboxes.containsKey(stateKey)) {
+            curGameState.setMoveTracker(bead);
+            curGameState.setMENACEMove(player == 1);
+            return matchboxes.get(stateKey);
         }
     
         // If the state doesn’t exist, create a new Matchbox and add it to matchboxes
         Matchbox newMatchbox = new Matchbox(newState);
-        matchboxes.add(newMatchbox);
+        matchboxes.put(stateKey, newMatchbox);
     
         // Update the move tracker and MENACE move indicator
         curGameState.setMoveTracker(bead);

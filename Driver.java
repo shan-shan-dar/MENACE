@@ -1,9 +1,10 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Driver {
     private static int gameCount = 0;
     private final static ArrayList<Integer> gameHistory = new ArrayList<>();
-    private final static ArrayList<Matchbox> matchboxes = new ArrayList<>();
+    private final static HashMap<String, Matchbox> matchboxes = new HashMap<>();
 
     public static void main(String[] args) {
         while(true){
